@@ -10,7 +10,13 @@ drink aCup ozDrank = if ozDiff >= 0
 
 isEmpty aCup = getOz aCup == 0
 
-robot :: (String, Int, Int) -> ((String, Int, Int) -> t) -> t
+type Name = String
+type Attack = Int
+type HP = Int
+type RobotData = (Name,Attack,HP)
+type Robot t = (RobotData -> t) -> t
+
+robot :: RobotData -> Robot t
 robot (name,attack,hp)  = \message -> message (name,attack,hp)
 
 -- name :: (String, Int, Int) -> String
@@ -51,6 +57,9 @@ fastRobotRound3 = fight slowRobotRound3 fastRobotRound2
 
 printAllHps = map getHP
 
+returnWinner
+  :: ((RobotData -> t1) -> RobotData) -> ((RobotData -> RobotData) -> t1) 
+      -> Robot t2   
 returnWinner robotA robotB = robot(
   robotA ( \(nA,aA,hA) -> 
     robotB ( \(nB,aB,hB) -> 
@@ -59,6 +68,9 @@ returnWinner robotA robotB = robot(
       else (nB, aB, hB)
     )
   ))
+
+--winner :: Robot t -> Robot t -> Robot t
+winner rA rB = if getHP rA == 0 then rA else rB
 
 bob = robot ("bob", 1, 100)
 threeRobots = [bob, slowRobot, fastRobot]
