@@ -56,6 +56,9 @@ titleTag = "245"
 titleSubfield :: Char -- prefix of subfield
 titleSubfield = 'a'
 
+titleRemainderSubfield :: Char
+titleRemainderSubfield = 'b'
+
 authorTag :: T.Text
 authorTag = "100"
 
@@ -143,13 +146,25 @@ lookupValue aTag subfield record = lookupSubfield entryMetadata subfield record
 lookupTitle :: MarcRecordRaw -> Maybe Title
 lookupTitle = lookupValue titleTag titleSubfield
 
+lookupRemainderTitle :: MarcRecordRaw -> Maybe Title
+lookupRemainderTitle = lookupValue titleTag titleRemainderSubfield
+
+concatTitles a Nothing = a
+concatTitles Nothing a = a
+concatTitles (Just a) (Just b) = Just (mconcat [a," ",b])
+
+lookupFullTitle :: MarcRecordRaw -> Maybe Title
+lookupFullTitle record = concatTitles title remainder
+    where title = lookupTitle record
+          remainder = lookupRemainderTitle record
+
 lookupAuthor :: MarcRecordRaw -> Maybe Author
 lookupAuthor = lookupValue authorTag authorSubfield
 
 marcToPairs :: B.ByteString -> [(Maybe Title, Maybe Author)]
 marcToPairs marcStream = zip titles authors
  where records = allRecords marcStream
-       titles = map lookupTitle records
+       titles = map lookupFullTitle records
        authors = map lookupAuthor records
 
 pairsToBooks :: [(Maybe Title, Maybe Author)] -> [Book]
