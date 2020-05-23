@@ -1,0 +1,10 @@
+cradle:
+  stack:
+    - path: "./app/"
+      component: "primes:exe:primes-exe"
+    - path: "./src/"
+      component: "primes:lib"
+    - path: "./test/"
+      component: "primes:test:primes-test"
+    - path: "./Setup.hs"
+      component: "Cabal"
