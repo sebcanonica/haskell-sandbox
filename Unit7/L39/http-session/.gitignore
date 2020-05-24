@@ -1,0 +1,4 @@
+.stack-work/
+*~
+ApiToken.hs
+data.json
